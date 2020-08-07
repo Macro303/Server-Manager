@@ -13,6 +13,7 @@
  - [pip: 20.1.1](https://pypi.org/project/pip/)
  - [PyInstaller: 3.6](https://pypi.org/project/PyInstaller/)
  - [discord.py: 1.4.0](https://pypi.org/project/discord.py/)
+ - [PyYAML: 5.3.1](https://pypi.org/project/PyYAML/)
 
 ## Execution
 ```bash
