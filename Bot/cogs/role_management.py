@@ -25,7 +25,7 @@ class RoleCog(commands.Cog, name='Role Management'):
         usage='[Role Names]'
     )
     async def assign_role(self, ctx, *role_names: str):
-        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Roles']) and \
+        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Requests']) and \
                 ctx.channel != get_channel(ctx, CONFIG['Channels']['Testing']):
             await ctx.message.delete()
             return
@@ -35,10 +35,7 @@ class RoleCog(commands.Cog, name='Role Management'):
             if not role:
                 await ctx.send(f"`{role_name}` does not exist")
                 continue
-            role_groups = []
-            for x in CONFIG['Groups'].values():
-                role_groups.extend(x)
-            if role.id in [x for x in role_groups]:
+            if role.id in [x for x in CONFIG['Roles']]:
                 if role.id in [x.id for x in ctx.author.roles]:
                     await ctx.author.remove_roles(role)
                 else:
@@ -49,17 +46,17 @@ class RoleCog(commands.Cog, name='Role Management'):
                 continue
 
     @commands.command(
-        name='Add-Role',
-        description='Create the assignable roles and give them a Group',
-        usage='[Group] [Role Names]'
+        name='Edit-Roles',
+        description='Add/Remove role/s to the list of assignable roles',
+        usage='[Role Names]'
     )
-    async def add_role(self, ctx, group: str, *role_names: str):
-        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Roles']) and \
+    async def add_role(self, ctx, *role_names: str):
+        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Requests']) and \
                 ctx.channel != get_channel(ctx, CONFIG['Channels']['Testing']):
             await ctx.message.delete()
             return
-        LOGGER.info(f"Adding {role_names} to `{group}`")
-        if 618596100332584970 not in [x.id for x in ctx.author.roles]:
+        LOGGER.info(f"Adding/Removing {role_names}")
+        if CONFIG['Admin Role'] not in [x.id for x in ctx.author.roles]:
             await ctx.send(f"{ctx.author.mention()}, you are not Authorized to use this command")
             await ctx.message.delete()
             return
@@ -68,54 +65,28 @@ class RoleCog(commands.Cog, name='Role Management'):
             if not role:
                 await ctx.send(f"`{role_name}` does not exist")
                 continue
-            if group in CONFIG['Groups']:
-                CONFIG['Groups'][group] = list({*CONFIG['Groups'][group], role.id})
+            if role.id in CONFIG['Roles']:
+                CONFIG['Roles'].remove(role.id)
             else:
-                CONFIG['Groups'][group] = [role.id]
+                CONFIG['Roles'].append(role.id)
             save_config()
-        await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
-
-    @commands.command(
-        name='Del-Role',
-        description='Remove assignable roles from the given Group',
-        usage='[Group] [Role Names]'
-    )
-    async def del_role(self, ctx, group: str, *role_names: str):
-        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Roles']) and \
-                ctx.channel != get_channel(ctx, CONFIG['Channels']['Testing']):
-            await ctx.message.delete()
-            return
-        LOGGER.info(f"Removing {role_names} from `{group}`")
-        if 618596100332584970 not in [x.id for x in ctx.author.roles]:
-            await ctx.send(f"{ctx.author.mention()}, you are not Authorized to use this command")
-            await ctx.message.delete()
-            return
-        for role_name in role_names:
-            role = get(ctx.author.guild.roles, name=role_name)
-            if not role:
-                await ctx.send(f"`{role_name}` does not exist")
-                continue
-            if group in CONFIG['Groups']:
-                CONFIG['Groups'][group].remove(role.id)
-            save_config()
-        await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+            await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
 
     @commands.command(
         name='Roles',
         description='List assignable roles'
     )
     async def list_roles(self, ctx):
-        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Roles']) and \
+        if ctx.channel != get_channel(ctx, CONFIG['Channels']['Requests']) and \
                 ctx.channel != get_channel(ctx, CONFIG['Channels']['Testing']):
             await ctx.message.delete()
             return
-        LOGGER.info("Creating the Role Menu")
-        if not CONFIG['Groups'].items():
+        LOGGER.info('Listing assignable roles')
+        if not CONFIG['Roles']:
             await ctx.send('No Roles found')
-        for group, roles in CONFIG['Groups'].items():
-            role_names = sorted(x.name for x in [get(ctx.author.guild.roles, id=role_id) for role_id in roles] if x)
-            role_str = '\n'.join(role_names)
-            await ctx.send(f"**__{group} Roles:__**\n```\n{role_str}```")
+        role_names = sorted(x.name for x in [get(ctx.author.guild.roles, id=role_id) for role_id in CONFIG['Roles']] if x)
+        role_str = '\n'.join(role_names)
+        await ctx.send(f"```\n{role_str}```")
         await ctx.message.delete()
 
 

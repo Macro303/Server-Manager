@@ -31,10 +31,10 @@ else:
     CONFIG = {
         'Prefix': '!',
         'Token': None,
-        'Groups': {},
+        'Admin Role': None,
+        'Roles': [],
         'Channels': {
-            'Logs': None,
-            'Roles': None,
+            'Requests': None,
             'Testing': None
         }
     }
