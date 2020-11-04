@@ -27,5 +27,5 @@ async def on_command_error(ctx, error):
 
 
 if __name__ == "__main__":
-    init_logger('Bot')
+    init_logger('Server-Manager')
     bot.run(CONFIG['Token'], bot=True, reconnect=True)
