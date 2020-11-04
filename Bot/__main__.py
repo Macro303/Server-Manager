@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import logging
 
 import discord
@@ -8,7 +7,7 @@ from Bot import CONFIG
 from Logger import init_logger
 
 LOGGER = logging.getLogger(__name__)
-COGS = ['Bot.cogs.role_management', 'Bot.cogs.admin']
+COGS = ['Bot.cogs.role_management']
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(CONFIG['Prefix']), case_insensitive=True)
 
 
@@ -28,4 +27,7 @@ async def on_command_error(ctx, error):
 
 if __name__ == "__main__":
     init_logger('Server-Manager')
-    bot.run(CONFIG['Token'], bot=True, reconnect=True)
+    if CONFIG['Token']:
+        bot.run(CONFIG['Token'], bot=True, reconnect=True)
+    else:
+        LOGGER.critical('Missing your Discord `Token`, update the config.yaml to continue')

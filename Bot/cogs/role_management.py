@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import logging
 from typing import Optional
 
@@ -19,64 +18,92 @@ class RoleCog(commands.Cog, name='Role Management'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-        name='Role',
-        description='Add/Remove role/s to yourself',
-        usage='[Role Names]'
-    )
-    async def edit_roles(self, ctx, *role_names: str):
-        for role_name in role_names:
-            role = get(ctx.author.guild.roles, name=role_name)
-            if not role:
-                await ctx.send(f"`{role_name}` doesn't exist")
-                continue
-            if role.id in CONFIG['Ignored']:
-                await ctx.send(f"`{role_name}` doesn't exist")
-                continue
-            if role.id in [x.id for x in ctx.author.roles]:
-                await ctx.author.remove_roles(role)
-            else:
-                await ctx.author.add_roles(role)
-        await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+    async def is_authorized(self, ctx) -> bool:
+        if CONFIG['Moderator']:
+            authorized = False
+            for role_id in CONFIG['Moderator']:
+                if role_id in [x.id for x in ctx.author.roles]:
+                    authorized = True
+            if not authorized:
+                await ctx.send(f"{ctx.author.mention()}, you are not Authorized to use this command")
+                await ctx.message.delete()
+                return False
+        return True
 
-    @commands.command(
-        name='Blacklist',
-        description='Add/Remove role/s to the unassignable list of roles',
-        usage='[Role Names]'
-    )
-    async def blacklist_roles(self, ctx, *role_names: str):
-        if CONFIG['Moderator'] not in [x.id for x in ctx.author.roles]:
-            await ctx.send(f"{ctx.author.mention()}, you are not Authorized to use this command")
-            await ctx.message.delete()
-            return
-        for role_name in role_names:
-            role = get(ctx.author.guild.roles, name=role_name)
-            if not role:
-                await ctx.send(f"`{role_name}` doesn't exist")
-                continue
-            if role.id in CONFIG['Ignored']:
-                CONFIG['Ignored'].remove(role.id)
-            else:
-                CONFIG['Ignored'].append(role.id)
-        save_config()
-        await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
+    @commands.command(name='Role')
+    async def roles(self, ctx, *role_names: str):
+        if len(role_names) == 0:
+            await self.list_roles(ctx)
+        else:
+            await self.edit_roles(ctx, *role_names)
 
-    @commands.command(
-        name='List',
-        description='List assignable roles'
-    )
     async def list_roles(self, ctx):
-        if CONFIG['Moderator'] not in [x.id for x in ctx.author.roles]:
-            await ctx.send(f"{ctx.author.mention()}, you are not Authorized to use this command")
-            await ctx.message.delete()
+        if not await self.is_authorized(ctx):
             return
+        LOGGER.info(f"{ctx.author} is displaying the Roles")
         role_names = []
         for role in ctx.author.guild.roles:
-            if role.id in CONFIG['Ignored']:
+            if role.id in CONFIG['Blacklist']:
                 continue
             role_names.append(role.name)
         role_str = '\n'.join(sorted(role_names))
         await ctx.send(f"```\n{role_str}```")
+        await ctx.message.delete()
+
+    async def edit_roles(self, ctx, *role_names: str):
+        LOGGER.info(f"{ctx.author} is editing their Roles")
+        for role_name in role_names:
+            role = get(ctx.author.guild.roles, name=role_name)
+            if not role:
+                await ctx.send(f"`{role_name}` doesn't exist")
+                continue
+            if role.id in CONFIG['Blacklist']:
+                await ctx.send(f"`{role.name}` doesn't exist")
+                continue
+            if role.id in [x.id for x in ctx.author.roles]:
+                await ctx.author.remove_roles(role)
+                await ctx.send(f"Took `{role.name}` from {ctx.author.display_name}")
+            else:
+                await ctx.author.add_roles(role)
+                await ctx.send(f"Gave `{role.name}` to {ctx.author.display_name}")
+        await ctx.message.delete()
+
+    @commands.command(name='Blacklist')
+    async def blacklist(self, ctx, *role_names: str):
+        if not await self.is_authorized(ctx):
+            return
+        if len(role_names) == 0:
+            await self.list_blacklist(ctx)
+        else:
+            await self.edit_blacklist(ctx, *role_names)
+
+    async def list_blacklist(self, ctx):
+        LOGGER.info(f"{ctx.author} is displaying the Blacklist")
+        role_names = {}
+        for role_id in CONFIG['Blacklist']:
+            role = get(ctx.author.guild.roles, id=role_id)
+            if not role:
+                CONFIG['Blacklist'].remove(role_id)
+                continue
+            role_names[role.id] = role.name
+        role_names = [f"{k}: {v}" for k, v in sorted(role_names.items(), key=lambda item: item[1])]
+        role_str = '\n'.join(role_names)
+        await ctx.send(f"```\n{role_str}```")
+        await ctx.message.delete()
+
+    async def edit_blacklist(self, ctx, *role_names: str):
+        LOGGER.info(f"{ctx.author} is editing the Blacklist")
+        for role_name in role_names:
+            role = get(ctx.author.guild.roles, name=role_name)
+            if not role:
+                await ctx.send(f"`{role_name}` doesn't exist")
+                continue
+            if role.id in CONFIG['Blacklist']:
+                CONFIG['Blacklist'].remove(role.id)
+                await ctx.send(f"Removed `{role.name}` from the Blacklist")
+            else:
+                CONFIG['Blacklist'].append(role.id)
+                await ctx.send(f"Added `{role.name}` to the Blacklist")
         await ctx.message.delete()
 
 
