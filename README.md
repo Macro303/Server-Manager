@@ -6,7 +6,8 @@
 [![Contributors](https://img.shields.io/github/contributors/Macro303/Server-Manager.svg?style=flat-square)](https://github.com/Macro303/Server-Manager/graphs/contributors)
 [![License](https://img.shields.io/github/license/Macro303/Server-Manager.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-_TODO_
+A custom built role bot for **<u>The Playground</u> Discord Server**  
+*See <u>Socials</u> section below for links*
 
 ## Commands
 
@@ -18,22 +19,23 @@ _TODO_
 | `>Blacklist [<RoleName>]` | True | Adds/Removes the role to the role blacklist, roles with spaces require to be surrounded by "quotes". Can be given multiple roles. |
 
 ## Built Using
- - [Python: 3.8.5](https://www.python.org/)
- - [pip: 20.2.4](https://pypi.org/project/pip/)
- - [discord.py: 1.5.1](https://pypi.org/project/discord.py/)
+ - [Python: 3.9.1](https://www.python.org/)
+ - [pip: 20.3.3](https://pypi.org/project/pip/)
+ - [discord.py: 1.6.0](https://pypi.org/project/discord.py/)
  - [PyYAML: 5.3.1](https://pypi.org/project/PyYAML/)
 
 ## Execution
-1. Run the following:
+1. Execute the following to generate the default files:
    ```bash
    $ pip install -r requirements.txt
    $ python -m Bot
    ```
-2. Update the generated `config.yaml` with your Token and preferred Prefix
+2. Update the generated `config.yaml` with your Discord Token and preferred Prefix
 3. Run the following:
    ```bash
    $ python -m Bot
    ```
 
 ## Socials
+[![Discord | The Bot Playground](https://discord.com/api/v6/guilds/797975024907976705/widget.png?style=banner2)](https://discord.gg/wsbSUYqDRP)
 [![Discord | The Playground](https://discord.com/api/v6/guilds/618581423070117932/widget.png?style=banner2)](https://discord.gg/nqGMeGg)
