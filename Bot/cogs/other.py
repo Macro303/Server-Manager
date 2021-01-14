@@ -56,7 +56,7 @@ class OtherCog(commands.Cog, name='Other Commands'):
 
         if public_list:
             embed.add_field(name='Public Commands', value='\n'.join(public_list), inline=False)
-        if private_list and ctx.author.name == 'Macro303':  # TODO This should be a role
+        if private_list and 'Moderator' in [x.name for x in ctx.author.roles]:
             embed.add_field(name='Private Commands', value='\n'.join(private_list), inline=False)
         if other_list:
             embed.add_field(name='Other Commands', value='\n'.join(other_list), inline=False)
