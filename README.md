@@ -10,13 +10,12 @@ A custom built role bot for **<u>The Playground</u> Discord Server**
 *See <u>Socials</u> section below for links*
 
 ## Commands
-
-| Command | Restricted | Description | Example |
-| ------- | ---------- | ----------- | ------- |
-| `>Role` | True | Lists all the possible roles a user can give themselves |
-| `>Role [<RoleName>]` | False | Adds/Removes the role to the message sender, roles with spaces require to be surrounded by "quotes". Can be given multiple roles. |
-| `>Blacklist` | True | Lists all the roles a user can't give themselves |
-| `>Blacklist [<RoleName>]` | True | Adds/Removes the role to the role blacklist, roles with spaces require to be surrounded by "quotes". Can be given multiple roles. |
+| Name | Restricted | Command | Description |
+| ------- | ---------- | ------- | ----------- |
+| List roles | False | `>Role` | Lists all the possible roles a user can give themselves |
+| Give/Take role/s | False | `>Role [RoleName]` | Adds/Removes the role to the message sender, roles with spaces require to be surrounded by "quotes". Can be given multiple roles. |
+| List blacklisted roles | True | `>Blacklist` | Lists all the roles a user can't give themselves |
+| Add/Remove role to blacklist | True | `>Blacklist [RoleName]` | Adds/Removes the role to the role blacklist, roles with spaces require to be surrounded by "quotes". Can be given multiple roles. |
 
 ## Built Using
  - [Python: 3.9.1](https://www.python.org/)

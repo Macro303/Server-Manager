@@ -7,8 +7,8 @@ from Bot import CONFIG
 from Logger import init_logger
 
 LOGGER = logging.getLogger(__name__)
-COGS = ['Bot.cogs.role_management']
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(CONFIG['Prefix']), case_insensitive=True)
+COGS = ['Bot.cogs.roles', 'Bot.cogs.other']
+bot = commands.Bot(command_prefix=CONFIG['Prefix'], case_insensitive=True)
 
 
 @bot.event
